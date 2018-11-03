@@ -57,8 +57,27 @@ class QuestionsController extends Controller
      */
     public function store(StoreQuestionsRequest $request)
     {
+        
 
-        $question = Question::create($request->all());
+        $image = $request->file('questions_image');
+        $path = $image->store('public/image');
+        $param = "`";
+
+        $data = [
+            'topic_id' => $request->topic_id,
+            'question_text' => $request->question_text . $param . $path,
+            'option1' => $request->option1,
+            'option2' => $request->option2,
+            'option3' => $request->option3,
+            'option4' => $request->option4,
+            'option5' => $request->option5,
+            'correct' => $request->correct,
+            'code_snippet' => $request->code_snippet,
+            'answer_explanation' => $request->answer_explanation,
+            'more_info_link' => $request->more_info_link
+        ];
+
+        $question = Question::create($data);
 
         foreach ($request->input() as $key => $value) {
             if(strpos($key, 'option') !== false && $value != '') {
@@ -116,13 +135,20 @@ class QuestionsController extends Controller
      */
     public function show($id)
     {
-        $relations = [
-            'topics' => \App\Topic::get()->pluck('title', 'id')->prepend('Please select', ''),
+        $questionData = Question::findOrFail($id)->toArray();
+        $topic = \App\Topic::findOrFail($questionData['topic_id'])->toArray();
+
+        $questionArr = explode("`",$questionData["question_text"]);
+        $question = [
+            'question_text' => $questionArr[0],
+            'code_snippet' => $questionData["code_snippet"],
+            'answer_explanation' => $questionData["answer_explanation"],
+            'more_info_link' => $questionData["more_info_link"],
+            'image' => $questionArr[1]
         ];
 
-        $question = Question::findOrFail($id);
-
-        return view('questions.show', compact('question') + $relations);
+        $data = compact("question", "topic");
+        return view('questions.show', $data);
     }
 
 

@@ -2,7 +2,7 @@
 
 @section('content')
     <h3 class="page-title">@lang('quickadmin.questions.title')</h3>
-    {!! Form::open(['method' => 'POST', 'route' => ['questions.store']]) !!}
+    {!! Form::open(['method' => 'POST', 'route' => ['questions.store'], 'files' => true]) !!}
 
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -126,6 +126,18 @@
                     @if($errors->has('answer_explanation'))
                         <p class="help-block">
                             {{ $errors->first('answer_explanation') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 form-group">
+                    {!! Form::label('questions_image_label', 'Questions Image (Optional)', ['class' => 'control-label']) !!}
+                    {!! Form::file('questions_image') !!}
+                    <p class="help-block"></p>
+                    @if($errors->has('questions_image_error'))
+                        <p class="help-block">
+                            {{ $errors->first('questions_image_error') }}
                         </p>
                     @endif
                 </div>
